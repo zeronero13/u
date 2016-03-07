@@ -11,6 +11,7 @@ namespace NodeEditor
 		Dialog,
 		Text,
 		Float,
-		Add
+		Add,
+		Bool
 	}
 }

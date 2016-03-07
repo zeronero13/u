@@ -7,6 +7,7 @@ using System.Collections;
 
 namespace NodeEditor
 {
+	[Serializable]
 	public class EndNode : NodeBase
 	{
 		
@@ -30,8 +31,8 @@ namespace NodeEditor
 			base.InitNode ();
 			nodeType = NodeType.End;
 			nodeTitle = "End";
-			nodeRect = new Rect (50f, 50f, 50f, 50f);
-			flowInput = NodePort.createAsset (NodePortType.In, NodeConnectionType.FLOW, this);
+			nodeRect = new MyRect (50f, 50f, 50f, 50f);
+			flowInput = NodePort.createPort (NodePortType.In, NodeConnectionType.FLOW, this);
 		}
 		
 		public override void UpdateNode (Event e, Rect viewRect)

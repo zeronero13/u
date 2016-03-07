@@ -3,6 +3,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using NodeEditor;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 /*public class ReaderCallback: Action{
 
 }*/
@@ -62,7 +64,8 @@ public sealed class Reader {
 		instance.curNode = null;
 
 		instance.callback = _callback;
-		LoadGraph("default.asset");
+		//LoadGraph("default.asset");
+		LoadGraph("data.dat");
 
 		//events.onTextPhase (new ReaderTextData("we have a text phase!"));
 
@@ -92,12 +95,15 @@ public sealed class Reader {
 	//public static void ContinueDialoge(int i); move forward at the selected index
 	private static void LoadGraph(string path){
 
-		Reader.Instance.curGraph = (EncounterNodeGraph)UnityEditor.AssetDatabase.LoadAssetAtPath ( "Assets/EncounterEditor/Database/"+path, typeof(EncounterNodeGraph));
-		if (Reader.Instance.curGraph != null) {
+		if (File.Exists ("Assets/EncounterEditor/Database/" + path)) {
+			BinaryFormatter bf = new BinaryFormatter ();
+			FileStream fs = File.Open ("Assets/EncounterEditor/Database/" + path, FileMode.Open);
 
-		} else {
-			Debug.LogError ( "Unable load current path!");
+			Reader.Instance.curGraph = (EncounterNodeGraph)bf.Deserialize (fs);
+		}else {
+			Debug.LogError ( "Unable load data.dat from current path!");
 		}
+
 	}
 
 	// Continue the current dialogue after a Regular or Branched Text node

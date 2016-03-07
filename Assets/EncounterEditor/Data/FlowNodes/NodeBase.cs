@@ -3,29 +3,35 @@ using UnityEditor;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace NodeEditor
 {
-	public abstract class NodeBase : ScriptableObject
+	[Serializable]
+	public abstract class NodeBase
 	{
 	#region Public Variables
 		public bool isSelected = false;	//is node selected?
-		public Rect nodeRect;			//node position
+		//public Rect nodeRect;			//node position
+		public MyRect nodeRect;
 		public bool hasInputs = false;
 		public string nodeTitle = "Node title";
 		public string nodeName = "Node name";
 		public NodeType nodeType;
 		public GraphBase parentGraph; 
 
-		public bool _loaded;
+		[NonSerialized] public bool _loaded=false;
 	#endregion
 
 	#region Protected Variables
 		//[NonSerialized]
-		protected GUISkin
-			nodeSkin;
+		[NonSerialized] protected GUISkin nodeSkin;
 	#endregion
 
+
+		#region Constructor
+
+		#endregion
 	#region SubClasses
 
 
@@ -34,7 +40,7 @@ namespace NodeEditor
 	#region Main Methods
 		public virtual void InitNode ()
 		{
-		
+			_loaded = false;
 		
 		}
 		public virtual void UpdateNode (Event e, Rect viewRect)
@@ -57,6 +63,16 @@ namespace NodeEditor
 				return port.parentNode.parentGraph.connections.getNextNodeBackward (port);
 			}
 
+		}
+
+		public void deleteAllConnection (){
+			/*delete all connections that are connected to this node*/
+			deleteAllConnection (this);
+		}
+
+		public static void deleteAllConnection (NodeBase node){
+			/*delete all connections that are connected to this node*/
+			node.parentGraph.connections.deleteAllNodeConnections (node);
 		}
 
 	#if UNITY_EDITOR
@@ -103,19 +119,6 @@ namespace NodeEditor
 
 		void ProcessEvents (Event e, Rect viewRect)
 		{
-			/*//ez a node van éppen kiválasztva?
-			if (isSelected == true) {
-				// munkatéren lett kattintva
-				if (viewRect.Contains (e.mousePosition)) {
-					if (e.type == EventType.MouseDrag) {
-						Debug.Log("dragging the node!");
-						//node position megvált.
-						nodeRect.x += e.delta.x;
-						nodeRect.y += e.delta.y;
-					}
-				
-				}
-			}*/
 		}
 	#endregion
 	}

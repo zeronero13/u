@@ -4,6 +4,7 @@ using System.Collections;
 
 namespace NodeEditor
 {
+	
 	public class EncounterCreateNodePopupWindow : EditorWindow
 	{
 	
@@ -17,7 +18,7 @@ namespace NodeEditor
 		{
 		
 			curPopup = (EncounterCreateNodePopupWindow)EditorWindow.GetWindow<EncounterCreateNodePopupWindow> ();
-			curPopup.title = "Encounter Create Node Popup Window";
+			curPopup.titleContent.text = "Encounter Create Node Popup Window";
 		}
 	
 		void OnGUI ()

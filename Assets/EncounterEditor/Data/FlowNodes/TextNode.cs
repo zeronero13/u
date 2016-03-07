@@ -39,12 +39,12 @@ namespace NodeEditor
 			base.InitNode ();
 			nodeType = NodeType.Text;
 			nodeTitle = "Text";
-			nodeRect = new Rect (10f, 10f, 150f, 150f);
+			nodeRect = new MyRect (10f, 10f, 150f, 150f);
 
 			textData = TextData.createAsset (this);
 
-			flowOutputSucc = NodePort.createAsset (NodePortType.Out, NodeConnectionType.FLOW, this);
-			flowInput = NodePort.createAsset (NodePortType.In, NodeConnectionType.FLOW, this);	
+			flowOutputSucc = NodePort.createPort (NodePortType.Out, NodeConnectionType.FLOW, this);
+			flowInput = NodePort.createPort (NodePortType.In, NodeConnectionType.FLOW, this);	
 		}
 		
 		public override void UpdateNode (Event e, Rect viewRect)

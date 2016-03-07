@@ -47,8 +47,8 @@ namespace NodeEditor
 
 			GUILayout.EndHorizontal ();
 			if (curGraph != null) {
-				if (curGraph.showProperties == true && _loaded==true) {
-					curGraph.selectedNode.DrawNodeProperties(viewSkin);
+				if (/*curGraph*/EncounterNodeGraph.showProperties == true && _loaded==true) {
+					EncounterNodeGraph.selectedNode.DrawNodeProperties(viewSkin);
 				}
 			}
 			if (Event.current.type == EventType.Repaint) {

@@ -34,11 +34,11 @@ namespace NodeEditor{
 			base.InitNode ();
 			nodeType = NodeType.Branching;
 			nodeTitle = "Branching";
-			nodeRect = new Rect (10f, 10f, 200f, 100f);
+			nodeRect = new MyRect (10f, 10f, 200f, 100f);
 
-			flowOutputSucc = NodePort.createAsset (NodePortType.Out, NodeConnectionType.FLOW, this);
-			flowOutputFail = NodePort.createAsset (NodePortType.Out, NodeConnectionType.FLOW, this);
-			flowInput = NodePort.createAsset (NodePortType.In, NodeConnectionType.FLOW, this);	
+			flowOutputSucc = NodePort.createPort (NodePortType.Out, NodeConnectionType.FLOW, this);
+			flowOutputFail = NodePort.createPort(NodePortType.Out, NodeConnectionType.FLOW, this);
+			flowInput = NodePort.createPort (NodePortType.In, NodeConnectionType.FLOW, this);	
 		}
 
 		public override void UpdateNode (Event e, Rect viewRect)
@@ -78,6 +78,8 @@ namespace NodeEditor{
 			GUILayout.Label ("False: ");
 			NodePort.DrawPortBtn (flowOutputFail, viewSkin);
 			GUILayout.EndHorizontal ();
+
+			//List<CardBase> inst=CardDeckManager.instance.cardList;
 			
 		}
 

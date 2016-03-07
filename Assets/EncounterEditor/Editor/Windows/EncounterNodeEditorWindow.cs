@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System.Collections;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace NodeEditor
 {
@@ -19,10 +21,11 @@ namespace NodeEditor
 		public EncounterNodePropertyView propertyView;
 		public EncounterNodeWorkView workView; //tényleges munk.terület ahol a node-ok megjelennek
 	
-		public EncounterNodeGraph curGraph = null; // gráf amiben tároljuk a node-okat
+		public EncounterNodeGraph curGraph = null; // gráf amin éppen dolgozunk
 	
 		public float viewPrecentage = 0.75f; // tulaj. ablak mekkora % a teljes editor ablaknak
 		public Vector2 scrollPos = Vector2.zero; //ScrollView pos
+
 		public static GUISkin viewSkin;
 	#endregion
 
@@ -30,7 +33,7 @@ namespace NodeEditor
 		public static void InitEditorWindow ()
 		{
 			curWindow = (EncounterNodeEditorWindow)EditorWindow.GetWindow<EncounterNodeEditorWindow> (); // egy példány kérése
-			curWindow.title = "Encounter Editor";
+			curWindow.titleContent.text = "Encounter Editor";
 			LoadEditorSkin ();
 			CreateViews ();
 		}
@@ -125,18 +128,11 @@ namespace NodeEditor
 
 		public static void CreateNewGraph (string name)
 		{
-		
-			EncounterNodeGraph curGraph = (EncounterNodeGraph)ScriptableObject.CreateInstance<EncounterNodeGraph> ();
+
+			EncounterNodeGraph curGraph = new EncounterNodeGraph();
 			if (curGraph != null) {
 			
 				curGraph.graphName = name;
-				//curGraph.InitGraph ();
-			
-				//AssetDatabase.CreateAsset (curGraph, "Assets/NodeEditor/Database/" + name + ".asset");
-				AssetDatabase.CreateAsset (curGraph, "Assets/EncounterEditor/Database/" + name + ".asset");
-				AssetDatabase.SaveAssets ();
-				AssetDatabase.Refresh ();
-
 				curGraph.InitGraph ();
 			
 				EncounterNodeEditorWindow curWindow = (EncounterNodeEditorWindow)EditorWindow.GetWindow<EncounterNodeEditorWindow> ();
@@ -145,10 +141,9 @@ namespace NodeEditor
 					curWindow.curGraph = curGraph;
 				}
 
-				curWindow.curGraph.startNode=curWindow.CreateNode (NodeType.Start, new Vector2(70f,70f));
-
-				AssetDatabase.SaveAssets ();
-				AssetDatabase.Refresh ();
+				NodeBase nnode = curWindow.CreateNode (NodeType.Start, new Vector2(70f,70f));
+				curWindow.curGraph.startNode=nnode;
+				Save ();//save data file
 
 			} else {
 				EditorUtility.DisplayDialog ("Node message:", "Unable to create graph", "OK");
@@ -160,46 +155,43 @@ namespace NodeEditor
 		{
 		
 			EncounterNodeGraph curGraph = null;
-			//string graphPath = EditorUtility.OpenFilePanel ("Load Graph", Application.dataPath + "/NodeEditor/Database/", "");
-			string graphPath = EditorUtility.OpenFilePanel ("Load Graph", Application.dataPath + "/EncounterEditor/Database/", "");
-
-			if (graphPath.Length < 1) {
-				return; 
-			}
-
-			int appPathLen = Application.dataPath.Length;
-			string finalPath = graphPath.Substring (appPathLen - 6);
+			BinaryFormatter bf = new BinaryFormatter ();
+			FileStream fs = File.Open(Application.dataPath + "/EncounterEditor/Database/data.dat",FileMode.Open);
 		
-			curGraph = (EncounterNodeGraph)AssetDatabase.LoadAssetAtPath (finalPath, typeof(EncounterNodeGraph));
-			//Debug.Log (finalPath);
+			curGraph = (EncounterNodeGraph)bf.Deserialize (fs);
+			fs.Close ();
+
 			if (curGraph != null) {
 			
 				EncounterNodeEditorWindow curWindow = (EncounterNodeEditorWindow)EditorWindow.GetWindow<EncounterNodeEditorWindow> ();
 			
 				if (curWindow != null) {
 					curWindow.curGraph = curGraph;
-					//curWindow.workView.setGraph (curGraph);
 				}
-				//load in connection between nodes
-				/*string connectionPath = "Assets/EncounterEditor/Database/" + curGraph.graphName + "_Connections.asset";
-				Connections curConn = (Connections)AssetDatabase.LoadAssetAtPath (connectionPath, typeof(Connections));
-				if (curConn != null) {
-					curGraph.connections = curConn;
-				}*/
-
 			
 			} else {
-				EditorUtility.DisplayDialog ("Node message", "Unable load current path!", "OK");
+				EditorUtility.DisplayDialog ("Node message", "Unable load data.dat", "OK");
 			}
 		}
 	
 		public static void UnloadGraph ()
 		{
-			EncounterNodeEditorWindow curWindow = (EncounterNodeEditorWindow)EditorWindow.GetWindow<EncounterNodeEditorWindow> ();
-		
+			Save ();
+
 			if (curWindow != null) {
 				curWindow.curGraph = null;
 			}
+				
+		}
+
+		public static void Save(){
+			Debug.LogWarning ("Saving data to file");
+
+			BinaryFormatter bf = new BinaryFormatter ();
+			FileStream fs = File.Create ("Assets/EncounterEditor/Database/data.dat");
+
+			bf.Serialize (fs,EncounterNodeEditorWindow.curWindow.curGraph);
+			fs.Close();
 		}
 
 
@@ -212,24 +204,28 @@ namespace NodeEditor
 				switch (nodeType) {
 
 				case NodeType.Text:
-					curNode = (TextNode)ScriptableObject.CreateInstance<TextNode> ();
+					curNode = new TextNode ();
 					curNode.nodeName = "New Text";
 					break;
 				case NodeType.Dialog:
-					curNode = (DialogNode)ScriptableObject.CreateInstance<DialogNode> ();
+					curNode = new DialogNode ();
 					curNode.nodeName = "New Dialog";
 					break;
 				case NodeType.Branching:
-					curNode = (BranchingNode)ScriptableObject.CreateInstance<BranchingNode> ();
+					curNode = new BranchingNode ();
 					curNode.nodeName = "Branching Dialog";
 					break;
 				case NodeType.Start:
-					curNode = (StartNode)ScriptableObject.CreateInstance<StartNode> ();
+					curNode = new StartNode ();
 					curNode.nodeName = "New Start";
 					break;
 				case NodeType.End:
-					curNode = (EndNode)ScriptableObject.CreateInstance<EndNode> ();
+					curNode = new EndNode ();
 					curNode.nodeName = "New End";
+					break;
+				case NodeType.Bool:
+					curNode = new BoolNode ();
+					curNode.nodeName = "Bool Node";
 					break;
 				default:
 					break;
@@ -239,10 +235,6 @@ namespace NodeEditor
 
 					curNode.parentGraph = curGraph;
 					curGraph.nodes.Add (curNode);
-				
-					AssetDatabase.AddObjectToAsset (curNode, curGraph);
-					AssetDatabase.SaveAssets ();
-					AssetDatabase.Refresh ();
 
 					curNode.InitNode ();
 					curNode.nodeRect.x = mousePos.x;
@@ -256,19 +248,18 @@ namespace NodeEditor
 
 		public void DeleteNode (int nodeID)
 		{
-		
+			
 			if (curGraph != null) {
 			
 				if (curGraph.nodes.Count >= nodeID) {
-				
+					
 					NodeBase deleteNode = curGraph.nodes [nodeID];
+					deleteNode.deleteAllConnection ();
+
 					if (deleteNode != null) {
 					
 						curGraph.nodes.RemoveAt (nodeID);
-						GameObject.DestroyImmediate (deleteNode, true);
-					
-						AssetDatabase.SaveAssets ();
-						AssetDatabase.Refresh ();
+						deleteNode= null;
 					}
 				}
 			}

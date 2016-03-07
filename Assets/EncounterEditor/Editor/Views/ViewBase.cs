@@ -13,14 +13,14 @@ namespace NodeEditor
 	
 	#region Public Variables
 		public string viewTitle;
-		public Rect viewRect;
+		public Rect viewRect= new Rect();
 	#endregion
 	
 	#region Protected Variables
 		protected GUISkin viewSkin;
 		protected EncounterNodeGraph curGraph;
 	#endregion
-	
+
 	#region Constructors
 		public ViewBase (string title)
 		{

@@ -9,25 +9,25 @@ using System.Collections.Generic;
 namespace NodeEditor
 {
 	[Serializable]
-	public abstract class GraphBase : ScriptableObject
+	public abstract class GraphBase
 	{
 
 	#region Public Variables
 		public string graphName = "New Encounter Graph";
-		public List<NodeBase> nodes;
-		public Connections connections;
+		public List<NodeBase> nodes = new List<NodeBase>();
+		public Connections connections= new Connections();
 
 		public NodeBase startNode;
 
 		//when trying to connect nodes
-		public bool wantsConnection = false;	//user wants to create a connection right now?
-		public NodeBase connectionNode; 		//used to know :when drawing line from connectionNode to mouse 
-		public NodePort connectionNodePort;	
-		public bool showProperties = false;
 
-		public NodeBase selectedNode;
+		[NonSerialized] public static bool wantsConnection = false;	//user wants to create a connection right now?
+		[NonSerialized] public static NodeBase connectionNode = null; 		//used to know :when drawing line from connectionNode to mouse 
+		[NonSerialized] public static NodePort connectionNodePort = null;	
+		[NonSerialized] public static bool showProperties = false;
 
-		public GUISkin editorViewSkin;
+		[NonSerialized] public static NodeBase selectedNode = null;
+		[NonSerialized] public static GUISkin editorViewSkin = null;
 	#endregion
 
 	#region Main Methods
@@ -39,17 +39,24 @@ namespace NodeEditor
 
 				nodes = new List<NodeBase> ();
 			}
+			if (connections == null) {
+
+				connections = new Connections ();
+			}
 
 		}
 	
 		public virtual void InitGraph ()
 		{
 
-			connections = (Connections)ScriptableObject.CreateInstance<Connections> ();
+			if (nodes == null) {
 
-			AssetDatabase.AddObjectToAsset (connections, this);
-			AssetDatabase.SaveAssets ();
-			AssetDatabase.Refresh ();
+				nodes = new List<NodeBase> ();
+			}
+			if (connections == null) {
+
+				connections = new Connections ();
+			}
 
 			if (nodes.Count > 0) {
 				
@@ -69,7 +76,7 @@ namespace NodeEditor
 		public virtual void UpdateGraphGUI (Event e, Rect viewRect, GUISkin viewSkin)
 		{
 
-			this.editorViewSkin = viewSkin;
+			editorViewSkin = viewSkin;
 			if (nodes.Count > 0) {
 				//process events for graph
 				ProcessEvents (e, viewRect);
@@ -86,19 +93,21 @@ namespace NodeEditor
 
 		
 		}
+
 		protected void DrawWindows (int i, Event e, Rect viewRect, GUISkin viewSkin)
 		{
 			//Draw The Windows iteself, then callback DrawNode func.
 			//nodes [i].nodeRect = GUI.Window (i, nodes [i].nodeRect, DrawNode, nodes [i].nodeTitle);
-			nodes [i].nodeRect =
-			GUILayout.Window (i, nodes [i].nodeRect, DrawNode, nodes [i].nodeTitle, GUILayout.ExpandHeight (true));
+			nodes [i].nodeRect .setRect(
+				GUILayout.Window (i, nodes[i].nodeRect.getRect(), DrawNode, nodes [i].nodeTitle, GUILayout.ExpandHeight (true)));
 		}
 
 		protected void DrawNode (int id)
 		{
-			nodes [id].DrawNode (this.editorViewSkin);
+			nodes [id].DrawNode (editorViewSkin);
 			GUI.DragWindow ();
 		}
+			
 
 	#endif
 	

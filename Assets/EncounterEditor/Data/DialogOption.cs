@@ -8,7 +8,8 @@ using System.Collections.Generic;
 
 namespace NodeEditor
 {
-	public class DialogOption: ScriptableObject
+	[Serializable]
+	public class DialogOption /*:ScriptableObject*/
 	{
 		public bool showPosition = false;
 		public string status = "Open option";
@@ -39,12 +40,12 @@ namespace NodeEditor
 
 		public void InitOption ()
 		{	
-			flowOutputSucc = NodePort.createAsset (NodePortType.Out, NodeConnectionType.FLOW, parentNode);
-			flowOutputFail = NodePort.createAsset (NodePortType.Out, NodeConnectionType.FLOW, parentNode);
+			flowOutputSucc = NodePort.createPort (NodePortType.Out, NodeConnectionType.FLOW, parentNode);
+			flowOutputFail = NodePort.createPort (NodePortType.Out, NodeConnectionType.FLOW, parentNode);
 
-			activeInput = NodePort.createAsset (NodePortType.In, NodeConnectionType.BOOL, parentNode);	
-			showInput = NodePort.createAsset (NodePortType.In, NodeConnectionType.BOOL, parentNode);
-			conditionInput = NodePort.createAsset (NodePortType.In, NodeConnectionType.BOOL, parentNode);
+			activeInput = NodePort.createPort (NodePortType.In, NodeConnectionType.BOOL, parentNode);	
+			showInput = NodePort.createPort (NodePortType.In, NodeConnectionType.BOOL, parentNode);
+			conditionInput = NodePort.createPort (NodePortType.In, NodeConnectionType.BOOL, parentNode);
 		}
 
 		public void DrawOption (GUISkin viewSkin)
@@ -96,11 +97,7 @@ namespace NodeEditor
 		public static DialogOption createAsset (NodeBase parentNode)
 		{
 
-			DialogOption option = (DialogOption)ScriptableObject.CreateInstance<DialogOption> ();
-			
-			AssetDatabase.AddObjectToAsset (option, parentNode);
-			AssetDatabase.SaveAssets ();
-			AssetDatabase.Refresh ();
+			DialogOption option = new DialogOption();
 
 			option.parentNode = parentNode;
 			option.InitOption ();
@@ -170,8 +167,7 @@ namespace NodeEditor
 
 			GUILayout.EndVertical ();
 			GUILayout.Space (20);
-			
-			EditorUtility.SetDirty (this);
+
 		}
 		#endif
 	}

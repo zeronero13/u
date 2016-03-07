@@ -12,7 +12,7 @@ namespace NodeEditor
 	public class EncounterNodeGraph : GraphBase
 	{
 
-	#region Main Methods
+		#region Main Methods
 
 		public override void OnEnable ()
 		{
@@ -22,7 +22,7 @@ namespace NodeEditor
 		public override void InitGraph ()
 		{
 			base.InitGraph ();
-		
+
 		}
 
 		public override void UpdateGraph ()
@@ -30,7 +30,7 @@ namespace NodeEditor
 			base.UpdateGraph ();
 		}
 
-	#if UNITY_EDITOR
+		#if UNITY_EDITOR
 		public override void UpdateGraphGUI (Event e, Rect viewRect, GUISkin viewSkin)
 		{
 
@@ -39,25 +39,25 @@ namespace NodeEditor
 
 			//Lets look for connection mode
 			if (wantsConnection) {
-			
+
 				if (connectionNode != null) {
 					DrawConnectionToMouse (e.mousePosition);
 				}
-			
+
 			}
-		
+
 			if (e.type == EventType.Layout) {
 				if (selectedNode != null) {
 					showProperties = true;
 				}
 			}
-			EditorUtility.SetDirty (this);
+
 		}
-	#endif
+		#endif
 
-	#endregion
+		#endregion
 
-	#region Utility Methods
+		#region Utility Methods
 		protected override void ProcessEvents (Event e, Rect viewRect)
 		{
 			/*//Debug.Log("GraphProcc: processed called");
@@ -84,10 +84,10 @@ namespace NodeEditor
 				}
 			}*/
 		}
-	
+
 		public override void DeselectAllNodes ()
 		{
-		
+
 			for (int i=0; i< nodes.Count; i++) {
 				nodes [i].isSelected = false;
 			}
@@ -104,19 +104,20 @@ namespace NodeEditor
 			Handles.BeginGUI ();
 			if (connectionNode != null) {
 				Handles.Label (new Vector3 (0.0f, 0.0f, 0.0f), "Node Title: " + connectionNode.nodeTitle);
-				//Handles.Label (new Vector3 (0.0f, 20.0f, 0.0f), "Parent node: " + connectionNodePort.parentNode.nodeTitle);
-				Handles.Label (new Vector3 (0.0f, 40.0f, 0.0f), "Port Rect: " + connectionNodePort.portRect.x + " , " + connectionNodePort.portRect.y);
+				Handles.Label (new Vector3 (0.0f, 20.0f, 0.0f), "Port Rect: " + connectionNodePort.portRect.x + " , " + connectionNodePort.portRect.y);
+				Handles.Label (new Vector3 (0.0f, 40.0f, 0.0f), "Node count: " + nodes.Count );
+				Handles.Label (new Vector3 (0.0f, 60.0f, 0.0f), "Connection count: " + connections.connections.Count );
 			}
-			Handles.Label (new Vector3 (0.0f, 60.0f, 0.0f), "Mouse: " + mousePosition.x + " , " + mousePosition.y);
+			Handles.Label (new Vector3 (0.0f, 80.0f, 0.0f), "[Mouse]: " + mousePosition.x + " , " + mousePosition.y);
 
 			Handles.color = Color.white;
 			Handles.DrawLine (new Vector3 ((connectionNodePort.portRect.x + connectionNodePort.portRect.width) / 2,
-			                               (connectionNodePort.portRect.y + connectionNodePort.portRect.height) / 2,
-		                               0f),
-		                  new Vector3 (mousePosition.x, mousePosition.y, 0f));
+				(connectionNodePort.portRect.y + connectionNodePort.portRect.height) / 2,
+				0f),
+				new Vector3 (mousePosition.x, mousePosition.y, 0f));
 
 			Handles.EndGUI ();
 		}
-	#endregion
+		#endregion
 	}
 }

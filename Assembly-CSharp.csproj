@@ -45,23 +45,30 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\EncounterEditor\Data\CardDeckManager\CardBase.cs" />
+     <Compile Include="Assets\EncounterEditor\Data\CardDeckManager\CardDeckManager.cs" />
      <Compile Include="Assets\EncounterEditor\Data\Connections.cs" />
+     <Compile Include="Assets\EncounterEditor\Data\DataManager.cs" />
      <Compile Include="Assets\EncounterEditor\Data\DialogOption.cs" />
      <Compile Include="Assets\EncounterEditor\Data\EncounterNodeGraph.cs" />
+     <Compile Include="Assets\EncounterEditor\Data\Enumerations\VariableValueTypeEnums.cs" />
+     <Compile Include="Assets\EncounterEditor\Data\FlowNodes\AddNode.cs" />
+     <Compile Include="Assets\EncounterEditor\Data\FlowNodes\BranchingNode.cs" />
+     <Compile Include="Assets\EncounterEditor\Data\FlowNodes\DialogNode.cs" />
+     <Compile Include="Assets\EncounterEditor\Data\FlowNodes\EndNode.cs" />
+     <Compile Include="Assets\EncounterEditor\Data\FlowNodes\FloatNode.cs" />
+     <Compile Include="Assets\EncounterEditor\Data\FlowNodes\NodeBase.cs" />
+     <Compile Include="Assets\EncounterEditor\Data\FlowNodes\StartNode.cs" />
+     <Compile Include="Assets\EncounterEditor\Data\FlowNodes\TextNode.cs" />
      <Compile Include="Assets\EncounterEditor\Data\GameActionTypeEnums.cs" />
      <Compile Include="Assets\EncounterEditor\Data\GraphBase.cs" />
+     <Compile Include="Assets\EncounterEditor\Data\IntNodes\IntNode.cs" />
+     <Compile Include="Assets\EncounterEditor\Data\LogicNodes\BoolNode.cs" />
      <Compile Include="Assets\EncounterEditor\Data\NodeConnectionEnums.cs" />
      <Compile Include="Assets\EncounterEditor\Data\NodeEnums.cs" />
      <Compile Include="Assets\EncounterEditor\Data\NodePort.cs" />
      <Compile Include="Assets\EncounterEditor\Data\NodePortTypeEnums.cs" />
-     <Compile Include="Assets\EncounterEditor\Data\Nodes\AddNode.cs" />
-     <Compile Include="Assets\EncounterEditor\Data\Nodes\BranchingNode.cs" />
-     <Compile Include="Assets\EncounterEditor\Data\Nodes\DialogNode.cs" />
-     <Compile Include="Assets\EncounterEditor\Data\Nodes\EndNode.cs" />
-     <Compile Include="Assets\EncounterEditor\Data\Nodes\FloatNode.cs" />
-     <Compile Include="Assets\EncounterEditor\Data\Nodes\NodeBase.cs" />
-     <Compile Include="Assets\EncounterEditor\Data\Nodes\StartNode.cs" />
-     <Compile Include="Assets\EncounterEditor\Data\Nodes\TextNode.cs" />
+     <Compile Include="Assets\EncounterEditor\Data\Struct\MyRect.cs" />
      <Compile Include="Assets\EncounterEditor\Data\Struct\TextData.cs" />
      <Compile Include="Assets\EncounterEditor\Reader\Reader.cs" />
      <Compile Include="Assets\Scripts\BoardManager.cs" />
@@ -74,11 +81,11 @@
      <Compile Include="Assets\Scripts\Loader.cs" />
      <Compile Include="Assets\Scripts\SceneFaderInOut.cs" />
      <Compile Include="Assets\Scripts\Startup.cs" />
- <Reference Include="UnityEngine.UI">
- <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
- </Reference>
  <Reference Include="UnityEngine.Networking">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEngine.UI">
+ <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

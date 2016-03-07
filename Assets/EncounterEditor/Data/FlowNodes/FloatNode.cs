@@ -7,7 +7,7 @@ using System.Collections;
 
 namespace NodeEditor
 {
-	//[Serializable]
+	[Serializable]
 	public class FloatNode : NodeBase
 	{
 

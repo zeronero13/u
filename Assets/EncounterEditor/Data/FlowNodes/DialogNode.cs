@@ -14,8 +14,8 @@ namespace NodeEditor
 
 	#region Variables
 		//Outputs
-		public NodePort flowOutputSucc;
-		public NodePort flowOutputFail;
+		//public NodePort flowOutputSucc;
+		//public NodePort flowOutputFail;
 		//Inputs
 		public NodePort flowInput;
 
@@ -38,13 +38,11 @@ namespace NodeEditor
 			base.InitNode ();
 			nodeType = NodeType.Dialog;
 			nodeTitle = "Dialog";
-			nodeRect = new Rect (10f, 10f, 200f, 200f);
+			nodeRect = new MyRect (10f, 10f, 200f, 200f);
 
 			textData = TextData.createAsset (this);
 			options = new List<DialogOption> ();
-			flowOutputSucc = NodePort.createAsset (NodePortType.Out, NodeConnectionType.FLOW, this);
-			flowOutputFail = NodePort.createAsset (NodePortType.Out, NodeConnectionType.FLOW, this);
-			flowInput = NodePort.createAsset (NodePortType.In, NodeConnectionType.FLOW, this);	
+			flowInput = NodePort.createPort (NodePortType.In, NodeConnectionType.FLOW, this);	
 		}
 	
 		public override void UpdateNode (Event e, Rect viewRect)

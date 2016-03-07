@@ -2,9 +2,13 @@
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
+using System;
 using System.Collections;
+using System.Collections.Generic;
 
-public class TextData: ScriptableObject{
+[Serializable]
+public class TextData /*:ScriptableObject*/
+{
 	public string text="";
 	public string subText="";
 
@@ -18,11 +22,7 @@ public class TextData: ScriptableObject{
 
 	public static TextData createAsset(NodeEditor.NodeBase parent){
 
-		TextData textDataAsset = (TextData)ScriptableObject.CreateInstance<TextData> ();
-
-		AssetDatabase.AddObjectToAsset (textDataAsset, parent);
-		AssetDatabase.SaveAssets ();
-		AssetDatabase.Refresh ();
+		TextData textDataAsset = new TextData();
 
 		return textDataAsset;
 	}
@@ -43,9 +43,6 @@ public class TextData: ScriptableObject{
 			subText = GUILayout.TextArea (subText);
 		}
 		GUILayout.EndVertical ();
-		
-
-		EditorUtility.SetDirty (this);
 
 	}
 	#endif

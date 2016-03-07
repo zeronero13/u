@@ -35,8 +35,10 @@ namespace NodeEditor
 			base.UpdateView (editorRect, percentageRect, e, curGraph, viewSkin);
 			//Draw Workspace
 			//pl. viewRect 0f,0f,W:=w*0.75f,H:=h*1f (a (0,0) == 'root' ablakjának pozicioja a monitoron)
-			GUI.Box (viewRect, viewTitle, viewSkin.GetStyle ("ViewBg"));
 
+			if (viewTitle==null)Debug.LogError("viewTitle is null");
+			if (viewSkin==null)Debug.LogError("viewSkin is null");
+			GUI.Box (viewRect, viewTitle, viewSkin.GetStyle ("ViewBg"));
 		
 			//DrawGrid
 			NodeUtils.DrawGrid (viewRect, 80f, 0.15f, Color.white);
@@ -81,8 +83,8 @@ namespace NodeEditor
 									curGraph.nodes[i].isSelected=false;
 
 									if (curGraph.nodes[i].nodeRect.Contains (e.mousePosition)) {
-										curGraph.selectedNode= curGraph.nodes[i];
-										curGraph.selectedNode.isSelected=true;
+										EncounterNodeGraph.selectedNode= curGraph.nodes[i];
+										EncounterNodeGraph.selectedNode.isSelected=true;
 										EncounterNodeEditorWindow.getInstance().propertyView._loaded=false;
 										break;
 									}
@@ -111,7 +113,7 @@ namespace NodeEditor
 							
 								for (int i=0; i<curGraph.nodes.Count; i++) {
 								
-									if (curGraph.nodes [i].nodeRect.Contains (mousePos)) {
+									if (curGraph.nodes [i].nodeRect.Contains (mousePos) && (curGraph.nodes[i].nodeType!=NodeType.Start)) {
 										deleteNodeID = i;
 										overNode = true;
 									}
@@ -142,10 +144,13 @@ namespace NodeEditor
 					menu.AddSeparator ("");
 					menu.AddItem (new GUIContent ("Unload Graph"), false, ContextCallback, "unload");
 					menu.AddSeparator ("");
-					menu.AddItem (new GUIContent ("Text node"), false, ContextCallback, "text node");
-					menu.AddItem (new GUIContent ("Dialog node"), false, ContextCallback, "dialog node");
-					menu.AddItem (new GUIContent ("Branching node"), false, ContextCallback, "branching node");
-					menu.AddItem (new GUIContent ("End node"), false, ContextCallback, "end node");
+					menu.AddItem (new GUIContent ("Flow node/Text node"), false, ContextCallback, "text node");
+					menu.AddItem (new GUIContent ("Flow node/Dialog node"), false, ContextCallback, "dialog node");
+					menu.AddItem (new GUIContent ("Flow node/Branching node"), false, ContextCallback, "branching node");
+					menu.AddItem (new GUIContent ("Flow node/End node"), false, ContextCallback, "end node");
+					menu.AddSeparator ("");
+					menu.AddItem (new GUIContent ("Logic nodes/Bool node"), false, ContextCallbackLogic, "boolNode");
+
 				}
 			} else {
 			
@@ -192,7 +197,20 @@ namespace NodeEditor
 				break;
 			}
 		}
-	
+
+		void ContextCallbackLogic (object obj)
+		{
+
+			switch (obj.ToString ()) {
+			case "boolNode":
+				EncounterNodeEditorWindow.getInstance ().CreateNode (NodeType.Bool, mousePos);
+				break;
+			default:
+
+				break;
+			}
+		}
+
 	#endregion
 	}
 }

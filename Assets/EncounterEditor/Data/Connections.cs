@@ -1,4 +1,5 @@
 using UnityEngine;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -9,7 +10,7 @@ using System.Collections.Generic;
 namespace NodeEditor
 {
 	[Serializable]
-	public class Connections : ScriptableObject
+	public class Connections
 	{
 
 		[Serializable]
@@ -49,7 +50,8 @@ namespace NodeEditor
 			connections = new List<Connection> ();
 		}
 
-		public Connection getConnectionForPort(NodePort port){
+		public Connection getConnectionForPort (NodePort port)
+		{
 
 
 			if (port.portType == NodePortType.Out) {
@@ -58,7 +60,7 @@ namespace NodeEditor
 						return conn;
 					}
 				}
-			}else if(port.portType == NodePortType.In){
+			} else if (port.portType == NodePortType.In) {
 				foreach (Connection conn in connections) {
 					if (object.ReferenceEquals (conn.input, port)) {
 						return conn;
@@ -69,14 +71,16 @@ namespace NodeEditor
 			return null;
 		}
 
-		public NodeBase getNextNodeForward(NodePort port){
+		public NodeBase getNextNodeForward (NodePort port)
+		{
 			//FLOW, IMPULSE
-			return port.parentNode.parentGraph.connections.getConnectionForPort(port).input.parentNode;
+			return port.parentNode.parentGraph.connections.getConnectionForPort (port).input.parentNode;
 		}
 
-		public NodeBase getNextNodeBackward(NodePort port){
+		public NodeBase getNextNodeBackward (NodePort port)
+		{
 			//VALUES
-			return port.parentNode.parentGraph.connections.getConnectionForPort(port).output.parentNode;
+			return port.parentNode.parentGraph.connections.getConnectionForPort (port).output.parentNode;
 		}
 
 		public List<Connection> connections = new List<Connection> ();
@@ -106,7 +110,7 @@ namespace NodeEditor
 
 		public bool isConnectionCanBeMade (NodePort output, NodePort input)
 		{
-		
+
 			if (output == null) {
 				return false;
 			}
@@ -128,7 +132,7 @@ namespace NodeEditor
 			if (isContained (output, input)) {
 				return false;
 			}
-		
+
 			return true;
 		}
 
@@ -140,6 +144,17 @@ namespace NodeEditor
 				}
 			}
 			return false;
+		}
+
+		public void deleteAllConnectionRelated (NodePort port)
+		{
+			
+			if (port.getPortType () == NodePortType.Out) {
+				port.parentNode.parentGraph.connections.deleteAllConnectionRelatedOutput (port);	
+			} else {
+				port.parentNode.parentGraph.connections.deleteAllConnectionRelatedInput (port);
+			}
+
 		}
 
 		public void deleteAllConnectionRelatedOutput (NodePort output)
@@ -156,6 +171,8 @@ namespace NodeEditor
 					connections.Remove (connections [i]);
 					//look at connections where conn.input was mod and set occupied
 					//better take a look at those which had work on them
+
+					//különböző kapcsolatok típusok miatt isPortOccupied()
 					if (isPortOccupied (compInput)) {
 						compInput.occupied = true;
 					} else {
@@ -163,6 +180,7 @@ namespace NodeEditor
 					}
 				}
 			}
+			//mivel összes ouputból menöt törli
 			output.occupied = false;
 
 		}
@@ -186,7 +204,31 @@ namespace NodeEditor
 				}
 			}
 			input.occupied = false;
-			
+
+		}
+
+		public void deleteAllNodeConnections (NodeBase node)
+		{
+
+			List<NodePort> listOfPorts= new List<NodePort>();
+			foreach (Connection conn in connections) {
+				if (object.ReferenceEquals (conn.output.parentNode, node)) {
+
+					listOfPorts.Add (conn.output);
+
+				} else if (object.ReferenceEquals (conn.input.parentNode, node)) {
+
+					listOfPorts.Add (conn.input);
+
+				}
+			}
+			foreach (NodePort port in listOfPorts) {
+
+				deleteAllConnectionRelated (port);
+
+			}
+			listOfPorts = null;
+
 		}
 
 		public void AddConnection (NodePort output, NodePort input)
@@ -199,7 +241,10 @@ namespace NodeEditor
 			if (object.ReferenceEquals (output, input)) {
 				return;
 			}
-			if (output.parentNode.parentGraph.wantsConnection != true) {
+//			if (output.parentNode.parentGraph.wantsConnection != true) {
+//				return;
+//			}
+			if (EncounterNodeGraph.wantsConnection != true) {
 				return;
 			}
 			if (output.getPortType () != NodePortType.Out) {
@@ -211,9 +256,9 @@ namespace NodeEditor
 
 			if (isConnectionCanBeMade (output, input)) {
 				if (output.getConnectionType () == NodeConnectionType.FLOW) {
-					
+
 					//Flow outputs only have 1 output line
-					
+
 					//delete all connection (should be only 1) where this port exist
 					deleteAllConnectionRelatedOutput (output);
 
@@ -225,15 +270,10 @@ namespace NodeEditor
 
 					output.occupied = true;
 					input.occupied = true;
-					
+
 					return;
-				} else if ((input.getConnectionType () != NodeConnectionType.FLOW) && (input.getConnectionType () != NodeConnectionType.IMP)) {
-					//értékek esetén, tehát nem flow vagy impulse esetén, az inputba csak egy bejövő lehetséges
-
-					//delete all connection (should be only 1) where this port exist
-					deleteAllConnectionRelatedInput (input);
-
-					//add port
+				} else if (output.getConnectionType () == NodeConnectionType.IMP) {
+					
 					Connection newConn = new Connection (output, input);
 					connections.Add (newConn);
 
@@ -241,17 +281,22 @@ namespace NodeEditor
 					input.occupied = true;
 
 				} else {
+					//BOOL, INT, NUM
+					deleteAllConnectionRelatedInput (input);
+
 					Connection newConn = new Connection (output, input);
 					connections.Add (newConn);
 
 					output.occupied = true;
 					input.occupied = true;
+
 				}
 			}
 
 
 			return;
 		}
+			
 
 		public void DrawInputLines ()
 		{
@@ -265,6 +310,7 @@ namespace NodeEditor
 			Color color = Color.black;
 			Color shadColor = new Color (0, 0, 0, .06f);
 
+			int w = 1;
 			foreach (Connection conn in connections) {
 
 				startPos = new Vector3 (conn.output.portRect.x + 15, conn.output.portRect.y, 0);
@@ -280,7 +326,7 @@ namespace NodeEditor
 				} else if (conn.output.connectionType == NodeConnectionType.IMP) {
 					color = Color.yellow;
 				} else if (conn.output.connectionType == NodeConnectionType.BOOL) {
-					color = Color.blue;
+					color = Color.cyan;
 				} else {
 					color = Color.green;
 				}
@@ -290,6 +336,9 @@ namespace NodeEditor
 				}
 				Handles.DrawBezier (startPos, endPos, startTang, endTang, color, null, 3);
 
+				Handles.Label (new Vector3 (((startPos.x + endPos.x) / 2) - 5, ((startPos.y + endPos.y) / 2) - 15, 0), " [" + w + ".] "); //draw connection index number
+
+				w++;
 			}
 
 		}
